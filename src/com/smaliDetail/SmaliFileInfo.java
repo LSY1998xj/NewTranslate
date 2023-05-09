@@ -24,63 +24,64 @@ public class SmaliFileInfo implements Serializable {
     }
 
     public SmaliFile smaliFile;
-    public volatile static boolean[] initComplete = {false, false, false, false};
 
-    public SmaliFileInfo(String path) throws IOException {
+
+    public SmaliFileInfo(String path) throws IOException, InterruptedException {
         this.smaliFilePath = path;
-        new Thread(new Runnable() {
+        Thread copySmaliMess = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     copyFile(new File("src/com/smaliDetail/smaliMess.smali"), new File(path + "\\com\\smaliMess.smali"));
-                    initComplete[0] = true;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-        }).start();
-        new Thread(new Runnable() {
+        });
+        copySmaliMess.start();
+        Thread smaliDirListInit = new Thread(new Runnable() {
             @Override
             public void run() {
                 SmaliFileInfo.this.smaliDirList = FileOperation.searchDirInDirToList(path);
                 System.out.println("SmaliFileInfo.smaliDirList初始化成功!");
-                initComplete[1] = true;
             }
-        }).start();
+        });
+        smaliDirListInit.start();
         SmaliFileInfo.this.smailFileList = FileOperation.searchFileInDirToList(path, ".smali");
         System.out.println("SmaliFileInfo.smailFileList初始化成功!");
-        new Thread(new Runnable() {
+        Thread smailFileHas0localInit = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     SmaliFileInfo.this.smailFileHas0local = initSmailFileHas0local();
-                    initComplete[2] = true;
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 System.out.println("SmaliFileInfo.smailFileHas0local初始化成功!");
             }
-        }).start();
+        });
+        smailFileHas0localInit.start();
 
-        new Thread(new Runnable() {
+        Thread smaliFile0localInfoInit = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     SmaliFileInfo.this.smaliFile0localInfo = initSmailFileHas0localInfo();
-                    initComplete[3] = true;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 System.out.println("SmaliFileInfo.smaliFile0localInfo初始化成功!");
             }
-        }).start();
+        });
+        smailFileHas0localInit.start();
 
-        while (true) {
-            if (initComplete[0] && initComplete[1] && initComplete[2] && initComplete[3]) {
-                System.out.println("初始化已全部完成！");
-                break;
-            }
-        }
+        copySmaliMess.join();
+        smaliDirListInit.join();
+        smaliFile0localInfoInit.join();
+        smailFileHas0localInit.join();
+
+
     }
 
     public List<File> initSmailFileHas0local() throws IOException {

@@ -22,7 +22,7 @@ public class SmaliFile extends SmaliFileInfo {
     public volatile static boolean[] initComplete = {false, false};
     ExecutorService service;
 
-    public SmaliFile(String path) throws IOException {
+    public SmaliFile(String path) throws IOException, InterruptedException {
         super(path);
         service = new ThreadPoolExecutor(1000, 2000, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.AbortPolicy());
         this.smaliFilePath = super.getSmaliFilePath();
@@ -155,7 +155,7 @@ public class SmaliFile extends SmaliFileInfo {
     }
 
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         SmaliFile smaliFile = new SmaliFile("C:\\Users\\LSJ1998\\AndroidStudioProjects\\Drake-n-Trap\\app\\src\\main\\smali");
         smaliFile.service.shutdown();
     }

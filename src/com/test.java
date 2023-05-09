@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class test {
-    public void a() throws IOException {
+    public void a() throws IOException, InterruptedException {
         SmaliFileInfo smaliFileInfo=new SmaliFileInfo("./");
     };
 }
