@@ -54,7 +54,6 @@ public class SmaliFileInfo implements Serializable {
             public void run() {
                 try {
                     SmaliFileInfo.this.smailFileHas0local = initSmailFileHas0local();
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
